@@ -1,7 +1,7 @@
 "use client";
 import { Web3Provider } from "@/contexts/Web3Context";
-import TokenSale from "./components/TokenSale";
 import AdminControls from "./components/AdminControls";
+import { TokenSale } from "./components/TokenSale";
 
 export default function Home() {
   return (

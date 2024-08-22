@@ -1,6 +1,7 @@
 // utils/web3.ts
 import { ethers } from "ethers";
 
+// ABI do contrato de venda de tokens
 const tokenSaleABI = [
   {
     inputs: [
@@ -312,6 +313,7 @@ const tokenSaleABI = [
 
 const tokenSaleAddress = "0xAFFc4bE31CEAA7f40448BADEefD528D428034724";
 
+// Função para obter o provider
 export async function getProvider(): Promise<ethers.BrowserProvider> {
   if (window.ethereum) {
     const provider = new ethers.BrowserProvider(window.ethereum as any);
@@ -324,7 +326,40 @@ export async function getProvider(): Promise<ethers.BrowserProvider> {
   }
 }
 
+// Função para obter o contrato de venda de tokens
 export async function getTokenSaleContract(provider: ethers.BrowserProvider) {
   const signer = await provider.getSigner();
   return new ethers.Contract(tokenSaleAddress, tokenSaleABI, signer);
+}
+
+const tokenABI = [
+  {
+    constant: true,
+    inputs: [
+      {
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "balanceOf",
+    outputs: [
+      {
+        name: "balance",
+        type: "uint256",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+];
+
+export async function getTokenBalance(
+  contractAddress: string,
+  tokenAddress: string,
+  provider: ethers.BrowserProvider
+) {
+  const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
+  const balance = await tokenContract.balanceOf(contractAddress);
+  return ethers.formatUnits(balance, "ether");
 }
