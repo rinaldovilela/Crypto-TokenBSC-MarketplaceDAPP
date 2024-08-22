@@ -1,39 +1,16 @@
+// utils/web3.ts
 import { ethers } from "ethers";
 
 const tokenSaleABI = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "spender",
-        type: "address",
-      },
-      {
         internalType: "uint256",
-        name: "value",
+        name: "tokenAmount",
         type: "uint256",
       },
     ],
-    name: "approve",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "burn",
+    name: "addTokens",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -42,98 +19,45 @@ const tokenSaleABI = [
     inputs: [
       {
         internalType: "uint256",
-        name: "initialSupply",
+        name: "tokenAmount",
+        type: "uint256",
+      },
+    ],
+    name: "buyTokens",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract ERC20",
+        name: "_token",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_fixedPrice",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_dynamicBasePrice",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_dynamicIncrement",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_preSaleDuration",
         type: "uint256",
       },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "spender",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "allowance",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "needed",
-        type: "uint256",
-      },
-    ],
-    name: "ERC20InsufficientAllowance",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "sender",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "balance",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "needed",
-        type: "uint256",
-      },
-    ],
-    name: "ERC20InsufficientBalance",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "approver",
-        type: "address",
-      },
-    ],
-    name: "ERC20InvalidApprover",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "receiver",
-        type: "address",
-      },
-    ],
-    name: "ERC20InvalidReceiver",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "sender",
-        type: "address",
-      },
-    ],
-    name: "ERC20InvalidSender",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "spender",
-        type: "address",
-      },
-    ],
-    name: "ERC20InvalidSpender",
-    type: "error",
   },
   {
     inputs: [
@@ -156,49 +80,6 @@ const tokenSaleABI = [
     ],
     name: "OwnableUnauthorizedAccount",
     type: "error",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "spender",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "value",
-        type: "uint256",
-      },
-    ],
-    name: "Approval",
-    type: "event",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "mint",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
   },
   {
     anonymous: false,
@@ -229,78 +110,38 @@ const tokenSaleABI = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "to",
-        type: "address",
+        internalType: "uint256",
+        name: "basePrice",
+        type: "uint256",
       },
       {
         internalType: "uint256",
-        name: "value",
+        name: "increment",
         type: "uint256",
       },
     ],
-    name: "transfer",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
+    name: "setDynamicPricing",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
-    anonymous: false,
     inputs: [
       {
-        indexed: true,
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        indexed: false,
         internalType: "uint256",
-        name: "value",
+        name: "newPrice",
         type: "uint256",
       },
     ],
-    name: "Transfer",
-    type: "event",
+    name: "setFixedPrice",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "value",
-        type: "uint256",
-      },
-    ],
-    name: "transferFrom",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
+    inputs: [],
+    name: "togglePriceMode",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -318,38 +159,15 @@ const tokenSaleABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "spender",
-        type: "address",
-      },
-    ],
-    name: "allowance",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
+    inputs: [],
+    name: "withdrawETH",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
-    name: "balanceOf",
+    inputs: [],
+    name: "dynamicBasePrice",
     outputs: [
       {
         internalType: "uint256",
@@ -362,12 +180,12 @@ const tokenSaleABI = [
   },
   {
     inputs: [],
-    name: "decimals",
+    name: "dynamicIncrement",
     outputs: [
       {
-        internalType: "uint8",
+        internalType: "uint256",
         name: "",
-        type: "uint8",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -375,12 +193,38 @@ const tokenSaleABI = [
   },
   {
     inputs: [],
-    name: "name",
+    name: "fixedPrice",
     outputs: [
       {
-        internalType: "string",
+        internalType: "uint256",
         name: "",
-        type: "string",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getCurrentPrice",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "isFixedPrice",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -401,12 +245,12 @@ const tokenSaleABI = [
   },
   {
     inputs: [],
-    name: "symbol",
+    name: "preSaleActive",
     outputs: [
       {
-        internalType: "string",
+        internalType: "bool",
         name: "",
-        type: "string",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -414,7 +258,46 @@ const tokenSaleABI = [
   },
   {
     inputs: [],
-    name: "totalSupply",
+    name: "preSaleEndTime",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "token",
+    outputs: [
+      {
+        internalType: "contract ERC20",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "tokensSold",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalETH",
     outputs: [
       {
         internalType: "uint256",
@@ -427,7 +310,7 @@ const tokenSaleABI = [
   },
 ];
 
-const tokenSaleAddress = "0x97be2234a7e64faada671370f55c3b063633c26c";
+const tokenSaleAddress = "0xAFFc4bE31CEAA7f40448BADEefD528D428034724";
 
 export async function getProvider(): Promise<ethers.BrowserProvider> {
   if (window.ethereum) {
